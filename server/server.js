@@ -33,6 +33,18 @@ io.on('connection', (socket)=>{
     //     createdAt: 133
     // });
 
+    socket.emit('newMessage',{
+        from: "Admin",
+        text: "welcome to chat",
+        createdAt: new Date().getTime()
+    });
+    socket.broadcast.emit('newMessage', {
+        from: "Admin",
+        text: "New User just joined",
+        createdAt: new Date().getTime()
+    })
+
+
     //event listener , io.on only used for connection event
     //first arg data to send along with
     socket.on('createMessage', (message)=>{
@@ -44,6 +56,13 @@ io.on('connection', (socket)=>{
             text: message.text,
             createdAt: new Date().getTime()
         });
+
+        //broadcast, gets sent to everybody but this socket
+        // socket.broadcast.emit('newMessage',{
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // });
     });
 
     socket.on('disconnect', ()=>{
