@@ -3,12 +3,6 @@
  //arrow functions may not work in other browsers
   socket.on('connect', function(){
     console.log('connected to server');
-
-    //emitting only if connected, no longer needed cus io.emit on server.js
-    // socket.emit('createMessage', {
-    //     from: 'alice@examle.com',
-    //     text: 'look at what?'
-    // });
   });
 
  //happens when server goes down
@@ -19,4 +13,30 @@
 //custom events listener, first argument is data comming from emited event 
 socket.on('newMessage', function(message){
     console.log('new Message', message);
+    //render out incoming messages in ol
+    var li = jQuery("<li></li>");
+    li.text(`${message.from}: ${message.text}`);  //ES6: `${message.from}: ${message.text}`
+
+    jQuery('#messages').append(li);
+});
+
+//acknowledge, no longer needed, we have form
+// socket.emit('createMessage', {
+//     from: "Josh",
+//     text: "aloha"
+// }, function(data){  //data comes from callback in server.js
+//     //when acknowledgement arrives at client
+//     console.log('got it', data);
+// });
+
+
+jQuery('#messageForm').on('submit', function(e){
+    //need to access arg in order to override default behaviour that causes browser to refresh
+    e.preventDefault();
+    socket.emit('createMessage', {
+        from: 'User',
+        text: jQuery('[name=message]').val()
+    }, function(){
+        //for acknowledgement
+    });
 });
