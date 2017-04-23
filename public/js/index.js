@@ -12,10 +12,11 @@
 
 //custom events listener, first argument is data comming from emited event 
 socket.on('newMessage', function(message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     console.log('new Message', message);
     //render out incoming messages in ol
     var li = jQuery("<li></li>");
-    li.text(`${message.from}: ${message.text}`);  //ES6: `${message.from}: ${message.text}`
+    li.text(`${message.from} (${formattedTime}): ${message.text}`);  //ES6: `${message.from}: ${message.text}`
 
     jQuery('#messages').append(li);
 });
@@ -32,9 +33,10 @@ socket.on('newMessage', function(message){
 
 //event listener for createLocationMsg event
 socket.on('newLocationMessage', function(message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     var li = jQuery("<li></li>");
     var a = jQuery("<a target='_blank'>My current location</a>"); //target _blank tells to open in new tab
-    li.text(`${message.from}: `);
+    li.text(`${message.from} (${formattedTime}): `);
     a.attr('href', message.url);  
 
     li.append(a);
