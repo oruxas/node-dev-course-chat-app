@@ -5,6 +5,8 @@ const express = require ('express');
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
 
+
+const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -33,16 +35,8 @@ io.on('connection', (socket)=>{
     //     createdAt: 133
     // });
 
-    socket.emit('newMessage',{
-        from: "Admin",
-        text: "welcome to chat",
-        createdAt: new Date().getTime()
-    });
-    socket.broadcast.emit('newMessage', {
-        from: "Admin",
-        text: "New User just joined",
-        createdAt: new Date().getTime()
-    })
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat!'));
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined the chat!'))
 
 
     //event listener , io.on only used for connection event
@@ -51,11 +45,7 @@ io.on('connection', (socket)=>{
         console.log('createMessage', message);
         //add emit so that incoming message ould be sent to everybody
         //socket.emit emits to a sigle connection, io.emit - to every single connection
-        io.emit('newMessage',{
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        });
+        io.emit('newMessage',generateMessage(message.from, message.text));  //from user to user
 
         //broadcast, gets sent to everybody but this socket
         // socket.broadcast.emit('newMessage',{
