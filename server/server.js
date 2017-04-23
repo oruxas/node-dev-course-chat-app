@@ -25,16 +25,25 @@ io.on('connection', (socket)=>{
     console.log('new user connected');
 
     //emit event with matching name and optionally specify data
-    socket.emit('newMessage', {
-        from: 'bob@example.com',
-        text: "Hai, take a look",
-        createdAt: 133
-    });
+    
+    //no longer needed cuz io.emit
+    // socket.emit('newMessage', {
+    //     from: 'bob@example.com',
+    //     text: "Hai, take a look",
+    //     createdAt: 133
+    // });
 
     //event listener , io.on only used for connection event
     //first arg data to send along with
     socket.on('createMessage', (message)=>{
         console.log('createMessage', message);
+        //add emit so that incoming message ould be sent to everybody
+        //socket.emit emits to a sigle connection, io.emit - to every single connection
+        io.emit('newMessage',{
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
     });
 
     socket.on('disconnect', ()=>{

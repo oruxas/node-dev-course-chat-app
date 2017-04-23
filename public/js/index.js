@@ -4,11 +4,11 @@
   socket.on('connect', function(){
     console.log('connected to server');
 
-    //emitting only if connected
-    socket.emit('createMessage', {
-        from: 'alice@examle.com',
-        text: 'look at what?'
-    });
+    //emitting only if connected, no longer needed cus io.emit on server.js
+    // socket.emit('createMessage', {
+    //     from: 'alice@examle.com',
+    //     text: 'look at what?'
+    // });
   });
 
  //happens when server goes down
