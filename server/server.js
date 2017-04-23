@@ -46,7 +46,7 @@ io.on('connection', (socket)=>{
         //add emit so that incoming message ould be sent to everybody
         //socket.emit emits to a sigle connection, io.emit - to every single connection
         io.emit('newMessage',generateMessage(message.from, message.text));  //from user to user
-        callback('This is from server'); //sends event back to the front end, for multiple use {}, this data ends up in callback in index.js emit callback.
+        callback(); //sends event back to the front end, for multiple use {}, this data ends up in callback in index.js emit callback.
         //broadcast, gets sent to everybody but this socket
         // socket.broadcast.emit('newMessage',{
         //     from: message.from,
