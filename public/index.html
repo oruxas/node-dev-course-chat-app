@@ -7,17 +7,7 @@
             <p>welcome to chat app</p>
 
             <script src="/socket.io/socket.io.js"></script>
-            <script>
-                var socket = io(); //initiating request from client to open conneection and keep it open; socket variable critical to listen
-                socket.on('connect', ()=>{
-                    console.log('connected to server');
-                });
-
-                //happens when server goes down
-                socket.on('disconnect', ()=>{
-                    console.log('Disconnected from server');
-                });
-            </script>
+            <script src="/js/index.js"> </script>
         </body>
 </html>
 

@@ -24,6 +24,19 @@ app.use(express.static(publicPath));
 io.on('connection', (socket)=>{
     console.log('new user connected');
 
+    //emit event with matching name and optionally specify data
+    socket.emit('newMessage', {
+        from: 'bob@example.com',
+        text: "Hai, take a look",
+        createdAt: 133
+    });
+
+    //event listener , io.on only used for connection event
+    //first arg data to send along with
+    socket.on('createMessage', (message)=>{
+        console.log('createMessage', message);
+    });
+
     socket.on('disconnect', ()=>{
         console.log('Client disconnected');
     });
