@@ -7,6 +7,9 @@ const socketIO = require('socket.io');
 
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -15,7 +18,8 @@ var app = express();
 //app.listen uses the same method
 var server = http.createServer(app);
 var io = socketIO(server); //getting back web sockets server
-
+//user instance
+var users = new Users();
 
 app.use(bodyParser.json());
 //serve static files
@@ -35,9 +39,29 @@ io.on('connection', (socket)=>{
     //     createdAt: 133
     // });
 
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat!'));
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined the chat!'));
+   
 
+    socket.on('join', (params, callback)=>{
+        if(!isRealString(params.name) || !isRealString(params.room)){
+            //error
+           return callback('name and room name are required');
+        } 
+
+        socket.join(params.room);
+        users.removeUser(socket.id);//make sure there is no user with the same id as bellow
+        users.addUser(socket.id, params.name, params.room);
+
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+
+        //io.emit -> io.to('name').emit
+        //socket.broadcast.emit -> socket.broadcast.to('name).emit
+        //socket.emit
+         socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat!'));
+         socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} just joined the chat!`));
+        //socket.leave
+
+        callback();
+    });
 
     //event listener , io.on only used for connection event
     //first arg data to send along with
@@ -62,6 +86,13 @@ io.on('connection', (socket)=>{
 
     socket.on('disconnect', ()=>{
         console.log('Client disconnected');
+        var user = users.removeUser(socket.id);  //storing any potentially removed users
+
+        //do something only if actually deleted
+        if(user){
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room)); //update user list
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} just left the chat!`)); //send message
+        }    
     });
 });
 
