@@ -67,9 +67,15 @@ io.on('connection', (socket)=>{
     //first arg data to send along with
     socket.on('createMessage', (message, callback)=>{
         console.log('createMessage', message);
+
+        var user = users.getUser(socket.id);
+        if(user && isRealString(message.text)){
+            io.to(user.room).emit('newMessage',generateMessage(user.name, message.text));  //from user to user to everybody
+        }
+
         //add emit so that incoming message ould be sent to everybody
         //socket.emit emits to a sigle connection, io.emit - to every single connection
-        io.emit('newMessage',generateMessage(message.from, message.text));  //from user to user
+        
         callback(); //sends event back to the front end, for multiple use {}, this data ends up in callback in index.js emit callback.
         //broadcast, gets sent to everybody but this socket
         // socket.broadcast.emit('newMessage',{
@@ -81,7 +87,10 @@ io.on('connection', (socket)=>{
 
     //listening for createLocationMsg event
     socket.on('createLocationMsg', (coords)=>{
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude,coords.longitude));
+         var user = users.getUser(socket.id);
+         if(user){
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude,coords.longitude));
+         }
     });
 
     socket.on('disconnect', ()=>{
