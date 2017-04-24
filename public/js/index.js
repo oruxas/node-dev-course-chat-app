@@ -13,12 +13,23 @@
 //custom events listener, first argument is data comming from emited event 
 socket.on('newMessage', function(message){
     var formattedTime = moment(message.createdAt).format('h:mm a');
-    console.log('new Message', message);
-    //render out incoming messages in ol
-    var li = jQuery("<li></li>");
-    li.text(`${message.from} (${formattedTime}): ${message.text}`);  //ES6: `${message.from}: ${message.text}`
+    var template = jQuery('#message-template').html();               //.html returns message tags inside template
+    var html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
 
-    jQuery('#messages').append(li);
+    jQuery('#messages').append(html);
+
+
+    //old way
+    // console.log('new Message', message);
+    // //render out incoming messages in ol
+    // var li = jQuery("<li></li>");
+    // li.text(`${message.from} (${formattedTime}): ${message.text}`);  //ES6: `${message.from}: ${message.text}`
+
+    // jQuery('#messages').append(li);
 });
 
 //acknowledge, no longer needed, we have form
@@ -34,13 +45,20 @@ socket.on('newMessage', function(message){
 //event listener for createLocationMsg event
 socket.on('newLocationMessage', function(message){
     var formattedTime = moment(message.createdAt).format('h:mm a');
-    var li = jQuery("<li></li>");
-    var a = jQuery("<a target='_blank'>My current location</a>"); //target _blank tells to open in new tab
-    li.text(`${message.from} (${formattedTime}): `);
-    a.attr('href', message.url);  
+    var template = jQuery('#location-message-template').html();
+    var html = Mustache.render(template, {
+        from: message.from, 
+        url: message.url,
+        createdAt: formattedTime
+    });
+    jQuery('#messages').append(html);
+    // var li = jQuery("<li></li>");
+    // var a = jQuery("<a target='_blank'>My current location</a>"); //target _blank tells to open in new tab
+    // li.text(`${message.from} (${formattedTime}): `);
+    // a.attr('href', message.url);  
 
-    li.append(a);
-    jQuery('#messages').append(li);
+    // li.append(a);
+    // jQuery('#messages').append(li);
 });
 
 
