@@ -15,6 +15,7 @@
         //second to last
         var lastMessgeHeight = newMessage.prev().innerHeight();
 
+        //when visible area is on bottom of container and new message comes in we wanna scroll down. 
         if(clientHeight + scrollTop + newMessageHeight + lastMessgeHeight>= scrollHeight){
             //console.log('Should scroll');
             messages.scrollTop(scrollHeight);            
