@@ -1,5 +1,27 @@
  var socket = io(); //initiating request from client to open conneection and keep it open; socket variable critical to listen
-                
+
+
+ function scrollToBottom(){
+    //selectors
+        var messages = jQuery('#messages');
+
+        //last list item
+        var newMessage = messages.children('li:last-child');
+    //Heights
+        var clientHeight = messages.prop('clientHeight'); //visible height of messages container
+        var scrollTop = messages.prop('scrollTop'); //num of pixels scrolled into container
+        var scrollHeight = messages.prop('scrollHeight'); //total height of container, regardless of how much is visible
+        var newMessageHeight = newMessage.innerHeight(); //last messages height including padding with css
+        //second to last
+        var lastMessgeHeight = newMessage.prev().innerHeight();
+
+        if(clientHeight + scrollTop + newMessageHeight + lastMessgeHeight>= scrollHeight){
+            //console.log('Should scroll');
+            messages.scrollTop(scrollHeight);            
+        }
+ };
+
+
  //arrow functions may not work in other browsers
   socket.on('connect', function(){
     console.log('connected to server');
@@ -21,7 +43,7 @@ socket.on('newMessage', function(message){
     });
 
     jQuery('#messages').append(html);
-
+    scrollToBottom();
 
     //old way
     // console.log('new Message', message);
@@ -52,6 +74,7 @@ socket.on('newLocationMessage', function(message){
         createdAt: formattedTime
     });
     jQuery('#messages').append(html);
+    scrollToBottom();
     // var li = jQuery("<li></li>");
     // var a = jQuery("<a target='_blank'>My current location</a>"); //target _blank tells to open in new tab
     // li.text(`${message.from} (${formattedTime}): `);
